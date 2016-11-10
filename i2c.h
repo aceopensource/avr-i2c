@@ -14,6 +14,10 @@
 #include <util/twi.h>
 #include <stdint.h>
 #include <util/delay.h>
+#include <avr/pgmspace.h>
+
+#include "printf.h"
+//#include <stdio.h>
 
 #define F_SCL 400000UL // SCL frequency
 #define Prescaler 1 // TWPS0 = TWPS1 = 0x0
@@ -21,6 +25,9 @@
 
 #define I2C_READ 0x01
 #define I2C_WRITE 0x00
+
+// Debugging
+#define I2C_MASTER_DEBUG 0
 
 void i2c_init();
 void i2c_recover();
