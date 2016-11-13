@@ -4,7 +4,6 @@
  */
 
 #include "i2c.h"
-//#include "usart.h"
 
 /**
  * TWSR Status Codes (m328p datasheet p218)
@@ -102,7 +101,9 @@ uint8_t i2c_start(uint8_t address)
 		timeout++;
 		if (timeout > 20)
 		{
-			if(I2C_MASTER_DEBUG) printf("TWSR start() err1: 0x%02X\n", TWSR);
+#ifdef I2C_MASTER_DEBUG
+			printf("TWSR start() err1: 0x%02X\n", TWSR);
+#endif
 			return TWSR;
 		}
 	}
@@ -124,7 +125,9 @@ uint8_t i2c_start(uint8_t address)
 		timeout++;
 		if (timeout > 20)
 		{
-			if(I2C_MASTER_DEBUG) printf("TWSR start() err2: 0x%02X\n", TWSR);
+#ifdef I2C_MASTER_DEBUG
+			printf("TWSR start() err2: 0x%02X\n", TWSR);
+#endif
 			return TWSR;
 		}
 	}
@@ -134,7 +137,9 @@ uint8_t i2c_start(uint8_t address)
 	uint8_t twst = TW_STATUS & 0xF8;
 	if ( (twst != TW_MT_SLA_ACK) && (twst != TW_MR_SLA_ACK) ) return TWSR;
 
-	if(I2C_MASTER_DEBUG) printf("TWSR start() done: 0x%02X\n", TWSR);
+#ifdef I2C_MASTER_DEBUG
+	printf("TWSR start() done: 0x%02X\n", TWSR);
+#endif
 	return 0;
 }
 
@@ -155,7 +160,9 @@ uint8_t i2c_write(uint8_t data)
 		timeout++;
 		if (timeout > 20)
 		{
-			if(I2C_MASTER_DEBUG) printf("TWSR write() err: 0x%02X\n", TWSR);
+#ifdef I2C_MASTER_DEBUG
+			printf("TWSR write() err: 0x%02X\n", TWSR);
+#endif
 			OCR1A = 255;
 			return 1;
 		}
@@ -164,7 +171,9 @@ uint8_t i2c_write(uint8_t data)
 
 	if( (TWSR & 0xF8) != TW_MT_DATA_ACK ){ return 1; }
 
-	if(I2C_MASTER_DEBUG) printf("TWSR write() done: 0x%02X\n", TWSR);
+#ifdef I2C_MASTER_DEBUG
+	printf("TWSR write() done: 0x%02X\n", TWSR);
+#endif
 	return 0;
 }
 
@@ -183,7 +192,9 @@ uint8_t i2c_read_ack(uint8_t * data)
 		timeout++;
 		if (timeout > 20)
 		{
-			if(I2C_MASTER_DEBUG) printf("TWSR read_ack() err: 0x%02X\n", TWSR);
+#ifdef I2C_MASTER_DEBUG
+			printf("TWSR read_ack() err: 0x%02X\n", TWSR);
+#endif
 			return 1;
 		}
 	}
@@ -193,7 +204,9 @@ uint8_t i2c_read_ack(uint8_t * data)
 		*data = TWDR;
 
 	// return received data from TWDR
-	if(I2C_MASTER_DEBUG) printf("TWSR read_ack() done: 0x%02X\n", TWSR);
+#ifdef I2C_MASTER_DEBUG
+	printf("TWSR read_ack() done: 0x%02X\n", TWSR);
+#endif
 	return 0;
 }
 
@@ -212,7 +225,9 @@ uint8_t i2c_read_nack(uint8_t * data)
 		timeout++;
 		if (timeout > 20)
 		{
-			if(I2C_MASTER_DEBUG) printf("TWSR read_nack() done: 0x%02X\n", TWSR);
+#ifdef I2C_MASTER_DEBUG
+			printf("TWSR read_nack() done: 0x%02X\n", TWSR);
+#endif
 			return 1;
 		}
 	}
@@ -222,7 +237,9 @@ uint8_t i2c_read_nack(uint8_t * data)
 		*data = TWDR;
 
 	// return received data from TWDR
-	if(I2C_MASTER_DEBUG) printf("TWSR read_nack() done: 0x%02X\n", TWSR);
+#ifdef I2C_MASTER_DEBUG
+	printf("TWSR read_nack() done: 0x%02X\n", TWSR);
+#endif
 	return 0;
 }
 
@@ -235,7 +252,9 @@ uint8_t i2c_transmit(uint8_t address, uint8_t* data, uint16_t length)
 	{
 		if (i2c_write(data[i]))
 		{
-			if(I2C_MASTER_DEBUG) printf("TWSR transmit err: 0x%02X\n", TWSR);
+#ifdef I2C_MASTER_DEBUG
+			printf("TWSR transmit err: 0x%02X\n", TWSR);
+#endif
 			return 1;
 		}
 	}
@@ -243,7 +262,9 @@ uint8_t i2c_transmit(uint8_t address, uint8_t* data, uint16_t length)
 
 	i2c_stop();
 
-	if(I2C_MASTER_DEBUG) printf("TWSR transmit done: 0x%02X\n", TWSR);
+#ifdef I2C_MASTER_DEBUG
+	printf("TWSR transmit done: 0x%02X\n", TWSR);
+#endif
 	return 0;
 }
 
@@ -256,7 +277,9 @@ uint8_t i2c_receive(uint8_t address, uint8_t* data, uint16_t length)
 	{
 		 if (i2c_read_ack(data+i))
 		 {
-		 	if(I2C_MASTER_DEBUG) printf("TWSR receive err: 0x%02X\n", TWSR);
+#ifdef I2C_MASTER_DEBUG
+		 	printf("TWSR receive err: 0x%02X\n", TWSR);
+#endif
 		 	return 1;
 		 }
 	}
@@ -265,7 +288,9 @@ uint8_t i2c_receive(uint8_t address, uint8_t* data, uint16_t length)
 
 	i2c_stop();
 
-	if(I2C_MASTER_DEBUG) printf("TWSR receive done: 0x%02X\n", TWSR);
+#ifdef I2C_MASTER_DEBUG
+	printf("TWSR receive done: 0x%02X\n", TWSR);
+#endif
 	return 0;
 }
 
@@ -280,7 +305,9 @@ uint8_t i2c_writeReg(uint8_t devaddr, uint8_t regaddr, uint8_t* data, uint16_t l
 	{
 		if (i2c_write(data[i]))
 		{
-			if(I2C_MASTER_DEBUG) printf("TWSR writeReg() err: 0x%02X\n", TWSR);
+#ifdef I2C_MASTER_DEBUG
+			printf("TWSR writeReg() err: 0x%02X\n", TWSR);
+#endif
 			return 1;
 		}
 	}
@@ -288,7 +315,9 @@ uint8_t i2c_writeReg(uint8_t devaddr, uint8_t regaddr, uint8_t* data, uint16_t l
 
 	i2c_stop();
 
-	if(I2C_MASTER_DEBUG) printf("TWSR writeReg() done: 0x%02X\n", TWSR);
+#ifdef I2C_MASTER_DEBUG
+	printf("TWSR writeReg() done: 0x%02X\n", TWSR);
+#endif
 	return 0;
 }
 
@@ -318,7 +347,9 @@ void i2c_stop(void)
 //	uint8_t timeout;
 	// transmit STOP condition
 	TWCR = (1<<TWINT) | (1<<TWEN) | (1<<TWSTO);
-	if(I2C_MASTER_DEBUG) printf("TWSR stop() done: 0x%02X\n", TWSR);
+#ifdef I2C_MASTER_DEBUG
+	printf("TWSR stop() done: 0x%02X\n", TWSR);
+#endif
 
 //	timeout = 0;
 //	while( !(TWCR & (1<<TWINT)) );

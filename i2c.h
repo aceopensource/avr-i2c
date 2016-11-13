@@ -6,6 +6,10 @@
 #ifndef I2C_MASTER_H
 #define I2C_MASTER_H 1
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 #ifndef  F_CPU
 #	error i2c_master.h needs you to define F_CPU
 #endif
@@ -16,9 +20,6 @@
 #include <util/delay.h>
 #include <avr/pgmspace.h>
 
-#include "printf.h"
-//#include <stdio.h>
-
 #define F_SCL 400000UL // SCL frequency
 #define Prescaler 1 // TWPS0 = TWPS1 = 0x0
 #define TWBR_val ( ( (F_CPU / F_SCL) - 16 ) / (Prescaler * 2) )
@@ -27,10 +28,11 @@
 #define I2C_WRITE 0x00
 
 // Debugging
-#define I2C_MASTER_DEBUG 0
+#undef I2C_MASTER_DEBUG
 
-#ifdef __cplusplus
-extern "C" {
+#ifdef I2C_MASTER_DEBUG
+	#include "usart.h"
+	#include "printf.h"
 #endif
 
 void i2c_init();
