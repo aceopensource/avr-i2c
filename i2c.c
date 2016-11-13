@@ -4,7 +4,7 @@
  */
 
 #include "i2c.h"
-#include "usart.h"
+//#include "usart.h"
 
 /**
  * TWSR Status Codes (m328p datasheet p218)
