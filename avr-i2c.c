@@ -3,7 +3,7 @@
  * Christopher Bero <berocs@acedb.co>
  */
 
-#include "i2c.h"
+#include "avr-i2c.h"
 
 /**
  * TWSR Status Codes (m328p datasheet p218)
