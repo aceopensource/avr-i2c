@@ -35,7 +35,9 @@ void i2c_recover()
 	PORTC &= ~(1 << PC5);
 //	if(I2C_LOUD) printf("PortC: 0x%02X, DDRC: 0x%02X, PINC: 0x%02X\n", PORTC, DDRC, PINC);
 //	printf("PortC: 0x%02X, DDRC: 0x%02X, PINC: 0x%02X\n", PORTC, DDRC, PINC);
+#ifdef I2C_MASTER_DEBUG
 	printf("PortC: 0x%02X, DDRC: 0x%02X, PINC: 0x%02X\n", PORTC, DDRC, PINC);
+#endif
 //	while (!(PINC & (1<<PINC4)))
 //	{
 //		if(I2C_LOUD) printf("SDA line still low\n");
