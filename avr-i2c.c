@@ -239,7 +239,10 @@ uint8_t i2c_read_nack(uint8_t * data)
 
 uint8_t i2c_transmit(uint8_t address, uint8_t* data, uint16_t length)
 {
-	if (i2c_start(address | I2C_WRITE)) return 1;
+	uint8_t err = 0;
+
+	err=i2c_start(address | I2C_WRITE);
+	if (err) return err;
 
 	for (uint16_t i = 0; i < length; i++)
 	{
@@ -262,19 +265,18 @@ uint8_t i2c_transmit(uint8_t address, uint8_t* data, uint16_t length)
 
 uint8_t i2c_receive(uint8_t address, uint8_t* data, uint16_t length)
 {
-	if (i2c_start(address | I2C_READ)) return 1;
+	uint8_t err = 0;
+
+	err=i2c_start(address | I2C_READ);
+	if (err) return err;
 
 	for (uint16_t i = 0; i < (length-1); i++)
 	{
-		 if (i2c_read_ack(data+i))
-		 {
-#ifdef I2C_MASTER_DEBUG
-		 	printf("TWSR receive err: 0x%02X\n", TWSR);
-#endif
-		 	return 1;
-		 }
+		err=i2c_read_ack(data+i);
+		if (err) return err;
 	}
-	if (i2c_read_nack(data+(length-1))) return 1;
+	err=i2c_read_nack(data+(length-1));
+	if (err) return err;
 
 	i2c_stop();
 
@@ -286,19 +288,16 @@ uint8_t i2c_receive(uint8_t address, uint8_t* data, uint16_t length)
 
 uint8_t i2c_writeReg(uint8_t devaddr, uint8_t regaddr, uint8_t* data, uint16_t length)
 {
-	if (i2c_start(devaddr | 0x00)) return 1;
 
-	i2c_write(regaddr);
+	uint8_t err = 0;
+	if ((err = i2c_start(devaddr | TW_WRITE))) return err;
+
+	if ((err=i2c_write(regaddr))) return err;
 
 	for (uint16_t i = 0; i < length; i++)
 	{
-		if (i2c_write(data[i]))
-		{
-#ifdef I2C_MASTER_DEBUG
-			printf("TWSR writeReg() err: 0x%02X\n", TWSR);
-#endif
-			return 1;
-		}
+		err=i2c_write(data[i]);
+		if (err) return err;
 	}
 
 	i2c_stop();
@@ -311,17 +310,24 @@ uint8_t i2c_writeReg(uint8_t devaddr, uint8_t regaddr, uint8_t* data, uint16_t l
 
 uint8_t i2c_readReg(uint8_t devaddr, uint8_t regaddr, uint8_t* data, uint16_t length)
 {
-	if (i2c_start(devaddr)) return 1;
+	uint8_t err = 0;
+	err=i2c_start(devaddr | TW_WRITE);
+	if (err) return err;
 
-	i2c_write(regaddr);
+	err=i2c_write(regaddr);
+	if (err) return err;
 
-	if (i2c_start(devaddr | 0x01)) return 1;
+	err=i2c_start(devaddr | TW_READ);
+	if (err) return err;
 
 	for (uint16_t i = 0; i < (length-1); i++)
 	{
-		if (i2c_read_ack(data+i)) return 1;
+		err=i2c_read_ack(data+i);
+		if (err) return err;
 	}
-	if (i2c_read_nack(data+(length-1))) return 1;
+
+	err=i2c_read_nack(data+(length-1));
+	if (err) return err;
 
 	i2c_stop();
 
