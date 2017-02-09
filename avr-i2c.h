@@ -28,11 +28,11 @@ extern "C" {
 #define I2C_WRITE 0x00
 
 // Debugging
-#undef I2C_MASTER_DEBUG
+#undef I2C_MASTER_DEBUG // Change this to #define to enable debugging printfs.
 
 #ifdef I2C_MASTER_DEBUG
-	#include "usart.h"
-	#include "printf.h"
+//	#include "avr-usart.h" // Not needed if main application instantiates hardware.
+	#include "avr-printf.h"
 #endif
 
 void i2c_init();

@@ -18,7 +18,6 @@
 
 void i2c_init()
 {
-	i2c_recover();
 	// atmel Datasheet p232
 	TWSR &= ~((1 << TWPS1) | (1 << TWPS0));
 	// atmel Datasheet p212
@@ -337,21 +336,6 @@ uint8_t i2c_readReg(uint8_t devaddr, uint8_t regaddr, uint8_t* data, uint16_t le
 
 void i2c_stop(void)
 {
-//	uint8_t timeout;
 	// transmit STOP condition
 	TWCR = (1<<TWINT) | (1<<TWEN) | (1<<TWSTO);
-#ifdef I2C_MASTER_DEBUG
-	printf("TWSR stop() done: 0x%02X\n", TWSR);
-#endif
-
-//	timeout = 0;
-//	while( !(TWCR & (1<<TWINT)) );
-//	{
-//		_delay_us(50);
-//		timeout++;
-//		if (timeout > 20)
-//		{
-//			return;
-//		}
-//	}
 }
