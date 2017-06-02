@@ -19,6 +19,7 @@ extern "C" {
 #include <stdint.h>
 #include <util/delay.h>
 #include <avr/pgmspace.h>
+#include <stdbool.h>
 
 #define F_SCL 400000UL // SCL frequency
 #define Prescaler 1 // TWPS0 = TWPS1 = 0x0
@@ -37,7 +38,7 @@ extern "C" {
 
 void i2c_init();
 void i2c_recover();
-uint8_t i2c_start(uint8_t address);
+uint8_t i2c_start(uint8_t address, uint8_t mode);
 uint8_t i2c_write(uint8_t data);
 uint8_t i2c_read_ack(uint8_t * data);
 uint8_t i2c_read_nack(uint8_t * data);

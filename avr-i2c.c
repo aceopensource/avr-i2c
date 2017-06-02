@@ -86,9 +86,16 @@ void i2c_recover()
 //	i2c_init();
 //}
 
-uint8_t i2c_start(uint8_t address)
+uint8_t i2c_start(uint8_t address, uint8_t mode)
 {
 	uint8_t timeout;
+
+	// Check mode
+	if (mode != I2C_READ && mode != I2C_WRITE)
+	{
+		return 1;
+	}
+
 	// reset TWI control register
 	TWCR = 0;
 	// transmit START condition
@@ -119,7 +126,7 @@ uint8_t i2c_start(uint8_t address)
 	}
 
 	// load slave address into data register
-	TWDR = address;
+	TWDR = ((address<<1) | mode);
 	// start transmission of address
 	TWCR = (1<<TWINT) | (1<<TWEN);
 	// wait for end of transmission
@@ -242,7 +249,7 @@ uint8_t i2c_transmit(uint8_t address, uint8_t* data, uint16_t length)
 {
 	uint8_t err = 0;
 
-	err=i2c_start(address | I2C_WRITE);
+	err=i2c_start(address, I2C_WRITE);
 	if (err) return err;
 
 	for (uint16_t i = 0; i < length; i++)
@@ -265,7 +272,7 @@ uint8_t i2c_receive(uint8_t address, uint8_t* data, uint16_t length)
 {
 	uint8_t err = 0;
 
-	err=i2c_start(address | I2C_READ);
+	err=i2c_start(address, I2C_READ);
 	if (err) return err;
 
 	for (uint16_t i = 0; i < (length-1); i++)
@@ -289,7 +296,7 @@ uint8_t i2c_writeReg(uint8_t devaddr, uint8_t regaddr, uint8_t* data, uint16_t l
 #endif
 
 	uint8_t err = 0;
-	if ((err = i2c_start(devaddr | TW_WRITE))) return err;
+	if ((err = i2c_start(devaddr, TW_WRITE))) return err;
 
 	if ((err=i2c_write(regaddr))) return err;
 
@@ -311,13 +318,13 @@ uint8_t i2c_readReg(uint8_t devaddr, uint8_t regaddr, uint8_t* data, uint16_t le
 //	printf("\tDeviceAddr: 0x%02X\n\tRegAddr: 0x%02X\n\tLen: 0x%02X\n", devaddr, regaddr, length);
 #endif
 	uint8_t err = 0;
-	err=i2c_start(devaddr | TW_WRITE);
+	err=i2c_start(devaddr, TW_WRITE);
 	if (err) return err;
 
 	err=i2c_write(regaddr);
 	if (err) return err;
 
-	err=i2c_start(devaddr | TW_READ);
+	err=i2c_start(devaddr, TW_READ);
 	if (err) return err;
 
 	for (uint16_t i = 0; i < (length-1); i++)
